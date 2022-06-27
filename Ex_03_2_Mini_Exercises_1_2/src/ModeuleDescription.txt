@@ -1,0 +1,14 @@
+Hệ thống đọc 2 file excel studens.xlsx và transaction_history.xlsx, sau đó tính toán để xuất ra sao kê,
+thống kê ra sinh viên còn nợ tiền học
+
+students.xlsx là file excel chứa thông tin về sinh viên gồm mã sv, tên, mã nộp tiền, số tiền học cần nộp.
+transaction_history.xlsx là file excel chứa thông tin lịch sử nộp tiền vào tài khoản nhà trường gồm:
+- TransferType: Mặc định loại tiền nộp là HOCPHIKI1
+- Thời gian nộp tiền mặc định là thời điểm hiện tại
+- Amount: số tiền sinh viên đã nộp
+- Message: tin nhắn nộp tiền vào hệ thống ngân hàng, định dạng "Mã nộp tiền học"+"_"+"Tên đầy đủ của sv"
+
+Package:
+- fis.core: chứa các class đại diện cho các đối tượng tham gia bài toán: Student, Transaction, Report
+- fis.repo.io: chứa các class đọc và ghi file excel
+- fis.service: class ReportService, điều khiển việc đọc dữ liệu từ đầu vào và xuất ra sao kê
