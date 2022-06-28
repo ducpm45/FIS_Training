@@ -1,26 +1,21 @@
 package vn.fis.finaltest_ordermanagementsystem.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.ResultActions;
 import vn.fis.finaltest_ordermanagementsystem.dto.CreateCustomerDTO;
 import vn.fis.finaltest_ordermanagementsystem.dto.CustomerDTO;
+import vn.fis.finaltest_ordermanagementsystem.dto.UpdateCustomerDTO;
 import vn.fis.finaltest_ordermanagementsystem.model.Customer;
 import vn.fis.finaltest_ordermanagementsystem.service.CustomerService;
 
@@ -29,9 +24,7 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.willDoNothing;
-import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -102,13 +95,11 @@ class CustomerControllerTest {
                 .mobile("0123456789")
                 .build();
         CustomerDTO customerDTO = CustomerDTO.builder()
-                .id(1L)
                 .name("Thu Thuy")
                 .mobile("2344564566")
                 .address("Bac Giang")
                 .build();
         CustomerDTO customerDTO1 = CustomerDTO.builder()
-                .id(2L)
                 .name("Minh Duc")
                 .address("Ha Noi")
                 .mobile("0123456789")
@@ -130,25 +121,27 @@ class CustomerControllerTest {
     @Test
     void update() throws Exception {
         Long customerId = 1L;
-        CustomerDTO customerDTO = CustomerDTO.builder()
-                .id(1L)
+        UpdateCustomerDTO updateCustomerDTO = UpdateCustomerDTO.builder()
+                .mobile("0123456789")
+                .address("Ha Noi")
+                .build();
+        Customer updatedCustomer = Customer.builder()
+                .id(2L)
                 .name("Duc")
                 .mobile("0123456789")
                 .address("Ha Noi")
                 .build();
-        Mockito.when(customerService.update(1L, customerDTO)).thenReturn(customerDTO);
+        Mockito.when(customerService.update(2L, updateCustomerDTO)).thenReturn(updatedCustomer);
 
-        ResultActions response =mockMvc.perform(put("/api/customer/{customerId}", customerId)
+        ResultActions response = mockMvc.perform(put("/api/customer/{customerId}", customerId)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(customerDTO)));
+                .content(objectMapper.writeValueAsString(updateCustomerDTO)));
 
         response.andDo(print())
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name",
-                        is(customerDTO.getName())))
-                .andExpect(jsonPath("$.mobile",
-                        is(customerDTO.getMobile())))
-                .andExpect(jsonPath("$.address",
-                        is(customerDTO.getAddress())));
+                        is(updatedCustomer.getName())));
+
     }
 
     @Test
@@ -156,7 +149,7 @@ class CustomerControllerTest {
         Long customerId = 1L;
         willDoNothing().given(customerService).delete(customerId);
 
-        ResultActions response =mockMvc.perform(delete("/api/customer/{customerId}", customerId));
+        ResultActions response = mockMvc.perform(delete("/api/customer/{customerId}", customerId));
         response.andExpect(status().isOk())
                 .andDo(print());
     }

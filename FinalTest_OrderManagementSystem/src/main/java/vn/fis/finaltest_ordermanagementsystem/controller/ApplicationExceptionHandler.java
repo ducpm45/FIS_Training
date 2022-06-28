@@ -48,17 +48,9 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
                         .message(e.getMessage()).build());
     }
 
-    @ExceptionHandler(value = {CanNotDeleteCreatedStatusOrderException.class})
+    @ExceptionHandler(value = {CanNotDeletePaidStatusOrderException.class})
     protected ResponseEntity<ErrorMessage> handlerCanNotDeleteCreatedStatusOrderException(
-            CanNotDeleteCreatedStatusOrderException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(ErrorMessage.builder().timestamp(LocalDateTime.now()).code(ORDER_CAN_NOT_DELETE)
-                        .message(e.getMessage()).build());
-    }
-
-    @ExceptionHandler(value = {CanNotDeleteCancelledStatusOrderException.class})
-    protected ResponseEntity<ErrorMessage> handlerCanNotDeleteCancelledStatusOrderException(
-            CanNotDeleteCancelledStatusOrderException e) {
+            CanNotDeletePaidStatusOrderException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(ErrorMessage.builder().timestamp(LocalDateTime.now()).code(ORDER_CAN_NOT_DELETE)
                         .message(e.getMessage()).build());
@@ -88,5 +80,12 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
                         .code(CAN_ONLY_REMOVE_ORDER_ITEM_ON_CREATED_ORDER)
                         .message(e.getMessage()).build());
     }
-
+    @ExceptionHandler(value = {CanOnlyUpdateStatusForCreatedOrder.class})
+    protected ResponseEntity<ErrorMessage> handlerCanOnlyUpdateStatusForCreatedOrder(
+            CanOnlyUpdateStatusForCreatedOrder e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ErrorMessage.builder().timestamp(LocalDateTime.now())
+                        .code(CAN_ONLY_UPDATE_STATUS_FOR_CREATED_ORDER)
+                        .message(e.getMessage()).build());
+    }
 }

@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.fis.finaltest_ordermanagementsystem.dto.CreateCustomerDTO;
 import vn.fis.finaltest_ordermanagementsystem.dto.CustomerDTO;
+import vn.fis.finaltest_ordermanagementsystem.dto.UpdateCustomerDTO;
 import vn.fis.finaltest_ordermanagementsystem.model.Customer;
 import vn.fis.finaltest_ordermanagementsystem.service.CustomerService;
 
@@ -48,10 +49,11 @@ public class CustomerController {
 
     @PutMapping("/{customerId}")
     public ResponseEntity<CustomerDTO> update(@PathVariable("customerId") Long customerId,
-                                              @RequestBody CustomerDTO customerDTO) {
-        CustomerDTO updatedCustomer = customerService.update(customerId, customerDTO);
+                                              @RequestBody UpdateCustomerDTO updateCustomerDTO) {
+        Customer updatedCustomer = customerService.update(customerId, updateCustomerDTO);
         log.info("Updated customer: {}", updatedCustomer);
-        return new ResponseEntity<>(updatedCustomer, HttpStatus.OK);
+        CustomerDTO updatedCustomerDTO = CustomerDTO.Mapper.mapFromCustomerEntity(updatedCustomer);
+        return new ResponseEntity<>(updatedCustomerDTO, HttpStatus.OK);
     }
 
     @DeleteMapping("/{customerId}")

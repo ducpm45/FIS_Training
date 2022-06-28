@@ -30,13 +30,13 @@ public class OrderServiceImpl implements OrderService {
     private final CustomerService customerService;
 
     private final ProductService productService;
-    @Autowired
-    private OrderItemRepo orderItemRepo;
+    private final OrderItemRepo orderItemRepo;
 
-    public OrderServiceImpl(OrderRepo orderRepo, CustomerService customerService, ProductService productService) {
+    public OrderServiceImpl(OrderRepo orderRepo, CustomerService customerService, ProductService productService, OrderItemRepo orderItemRepo) {
         this.orderRepo = orderRepo;
         this.customerService = customerService;
         this.productService = productService;
+        this.orderItemRepo = orderItemRepo;
     }
 
     @Override
@@ -92,19 +92,11 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void delete(Long orderId) {
         Order order = findById(orderId);
-        if (OrderStatus.CREATED.equals(order.getStatus())) {
+        if (OrderStatus.PAID.equals(order.getStatus())) {
             try {
-                throw new CanNotDeleteCreatedStatusOrderException(
-                        "Can not delete Order has status is CREATED!");
-            } catch (CanNotDeleteCreatedStatusOrderException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        if (OrderStatus.CANCELLED.equals(order.getStatus())) {
-            try {
-                throw new CanNotDeleteCancelledStatusOrderException(
-                        "Can not delete Order has status is CANCELLED!");
-            } catch (CanNotDeleteCancelledStatusOrderException e) {
+                throw new CanNotDeletePaidStatusOrderException(
+                        "Can not delete Order has status is PAID!");
+            } catch (CanNotDeletePaidStatusOrderException e) {
                 throw new RuntimeException(e);
             }
         }
@@ -114,13 +106,6 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Order addOrderItem(AddOrderItemDTO addOrderItemDTO) {
         Order order = findById(addOrderItemDTO.getOrderId());
-        if (null == order) {
-            try {
-                throw new OrderNotFoundException(String.format("Not found order with id %s", addOrderItemDTO.getOrderId()));
-            } catch (OrderNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        }
         if (!OrderStatus.CREATED.equals(order.getStatus())) {
             try {
                 throw new CanOnlyAddOrderItemToCreatedOrderException("Can only add order item to order has status is CREATED!");
@@ -147,19 +132,12 @@ public class OrderServiceImpl implements OrderService {
         orderRepo.save(order);
         product.setAvaiable(product.getAvaiable() - addOrderItemDTO.getQuantity());
         productService.update(product);
-        return findById(addOrderItemDTO.getOrderId());
+        return order;
     }
 
     @Override
     public Order removeOrderItem(RemoveItemDTO removeItemDTO) {
         Order order = findById(removeItemDTO.getOrderId());
-        if (null == order) {
-            try {
-                throw new OrderNotFoundException(String.format("Not found order with id %s", removeItemDTO.getOrderId()));
-            } catch (OrderNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        }
         if (!OrderStatus.CREATED.equals(order.getStatus())) {
             try {
                 throw new CanOnlyRemoveOrderItemOnCreatedOrderException(
@@ -181,7 +159,39 @@ public class OrderServiceImpl implements OrderService {
         product.setAvaiable(product.getAvaiable() + orderItem.getQuantity());
         orderItemRepo.deleteById(removeItemDTO.getOrderItemId());
 
-        return findById(removeItemDTO.getOrderId());
+        return order;
+    }
+
+    @Override
+    public Order paid(Long orderId) {
+        Order order = findById(orderId);
+        if (!OrderStatus.CREATED.equals(order.getStatus())) {
+            try {
+                throw new CanOnlyUpdateStatusForCreatedOrder(
+                        "Can only update status for order has status is CREATED!");
+            } catch (CanOnlyUpdateStatusForCreatedOrder e) {
+                throw new RuntimeException(e);
+            }
+        }
+        order.setStatus(OrderStatus.PAID);
+        orderRepo.save(order);
+        return order;
+    }
+
+    @Override
+    public Order cancel(Long orderId) {
+        Order order = findById(orderId);
+        if (!OrderStatus.CREATED.equals(order.getStatus())) {
+            try {
+                throw new CanOnlyUpdateStatusForCreatedOrder(
+                        "Can only update status for order has status is CREATED!");
+            } catch (CanOnlyUpdateStatusForCreatedOrder e) {
+                throw new RuntimeException(e);
+            }
+        }
+        order.setStatus(OrderStatus.CANCELLED);
+        orderRepo.save(order);
+        return order;
     }
 
 

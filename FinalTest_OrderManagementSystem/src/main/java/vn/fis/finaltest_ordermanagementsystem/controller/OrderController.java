@@ -36,7 +36,7 @@ public class OrderController {
         return new ResponseEntity<>(detailOrderDTO, HttpStatus.OK);
     }
 
-    @PostMapping("/")
+    @PostMapping
     public ResponseEntity<DetailOrderDTO> create(@RequestBody CreateOrderDTO createOrderDTO) {
         log.info("CreateOrderDTO: {}", createOrderDTO);
         Order savedOrder = orderService.create(createOrderDTO);
@@ -52,28 +52,36 @@ public class OrderController {
     }
 
     @PostMapping("/addOrderItem")
-    public DetailOrderDTO addOrderItem(@RequestBody AddOrderItemDTO addOrderItemDTO) {
+    public ResponseEntity<DetailOrderDTO> addOrderItem(@RequestBody AddOrderItemDTO addOrderItemDTO) {
         log.info("Order Item: {}", addOrderItemDTO);
         Order order = orderService.addOrderItem(addOrderItemDTO);
-        log.info("Order (Added new OrderItem): {}", order);
-        return DetailOrderDTO.Mapper.mapFromOrderEntity(order);
+        DetailOrderDTO detailOrderDTO = DetailOrderDTO.Mapper.mapFromOrderEntity(order);
+        log.info("DetailOrderDTO (Added new OrderItem): {}", detailOrderDTO);
+        return new ResponseEntity<>(detailOrderDTO, HttpStatus.OK);
     }
 
     @PostMapping("/removeOrderItem")
-    public DetailOrderDTO removeOrderItem(@RequestBody RemoveItemDTO removeItemDTO) {
+    public ResponseEntity<DetailOrderDTO> removeOrderItem(@RequestBody RemoveItemDTO removeItemDTO) {
         log.info("Remove Item: {}", removeItemDTO);
         Order order = orderService.removeOrderItem(removeItemDTO);
-        log.info("Order (Removed): {}", order);
-        return DetailOrderDTO.Mapper.mapFromOrderEntity(order);
+        DetailOrderDTO detailOrderDTO = DetailOrderDTO.Mapper.mapFromOrderEntity(order);
+        log.info("DetailOrderDTO (Removed): {}", detailOrderDTO);
+        return new ResponseEntity<>(detailOrderDTO, HttpStatus.OK);
     }
 
     @PostMapping("/paid/{orderId}")
-    public OrderDTO paid(@PathVariable("orderId") Long orderId) {
-        return null;
+    public ResponseEntity<DetailOrderDTO> paid(@PathVariable("orderId") Long orderId) {
+        Order order = orderService.paid(orderId);
+        log.info("DetailOrderDTO updated Paid status: {}", order);
+        DetailOrderDTO detailOrderDTO = DetailOrderDTO.Mapper.mapFromOrderEntity(order);
+        return new ResponseEntity<>(detailOrderDTO, HttpStatus.OK);
     }
 
     @PostMapping("/cancel/{orderId}")
-    public OrderDTO cancel(@PathVariable("orderId") Long orderId) {
-        return null;
+    public ResponseEntity<DetailOrderDTO> cancel(@PathVariable("orderId") Long orderId) {
+        Order order = orderService.cancel(orderId);
+        log.info("DetailOrderDTO updated Cancelled status: {}", order);
+        DetailOrderDTO detailOrderDTO = DetailOrderDTO.Mapper.mapFromOrderEntity(order);
+        return new ResponseEntity<>(detailOrderDTO, HttpStatus.OK);
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import vn.fis.finaltest_ordermanagementsystem.dto.CreateCustomerDTO;
 import vn.fis.finaltest_ordermanagementsystem.dto.CustomerDTO;
+import vn.fis.finaltest_ordermanagementsystem.dto.UpdateCustomerDTO;
 import vn.fis.finaltest_ordermanagementsystem.model.Customer;
 import vn.fis.finaltest_ordermanagementsystem.repository.CustomerRepo;
 
@@ -101,17 +102,16 @@ class CustomerServiceImplTest {
         customer.setMobile("0123456978");
         customer.setAddress("My Dinh");
         when(customerRepo.save(customer)).thenReturn(customer);
-
-        CustomerDTO customerDTO = CustomerDTO.builder()
-                .address("My Dinh")
-                .mobile("0123456978")
+        UpdateCustomerDTO updateCustomerDTO = UpdateCustomerDTO.builder()
+                .mobile("0123498765")
+                .address("Bac Giang")
                 .build();
-        when(customerRepo.findByMobile("0123456978")).thenReturn(null);
+        when(customerRepo.findByMobile("0123498765")).thenReturn(null);
         when(customerRepo.findById(1L)).thenReturn(Optional.ofNullable(customer));
-        CustomerDTO updatedCustomer = customerService.update(1L, customerDTO);
+        Customer updatedCustomer = customerService.update(1L, updateCustomerDTO);
         log.info("Update after: {}", updatedCustomer);
-        assertThat(updatedCustomer.getMobile()).isEqualTo("0123456978");
-        assertThat(updatedCustomer.getAddress()).isEqualTo("My Dinh");
+        assertThat(updatedCustomer.getMobile()).isEqualTo("0123498765");
+        assertThat(updatedCustomer.getAddress()).isEqualTo("Bac Giang");
     }
 
     @Test

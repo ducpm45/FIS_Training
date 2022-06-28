@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vn.fis.finaltest_ordermanagementsystem.dto.CreateCustomerDTO;
 import vn.fis.finaltest_ordermanagementsystem.dto.CustomerDTO;
+import vn.fis.finaltest_ordermanagementsystem.dto.UpdateCustomerDTO;
 import vn.fis.finaltest_ordermanagementsystem.exception.CustomerNotFoundException;
 import vn.fis.finaltest_ordermanagementsystem.exception.MobileExistedException;
 import vn.fis.finaltest_ordermanagementsystem.model.Customer;
@@ -58,22 +59,22 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public CustomerDTO update(Long customerId, CustomerDTO customerDTO) {
-        Customer customer = customerRepo.findByMobile(customerDTO.getMobile());
+    public Customer update(Long customerId, UpdateCustomerDTO updateCustomerDTO) {
+        Customer customer = customerRepo.findByMobile(updateCustomerDTO.getMobile());
         if(null != customer) {
             try {
-                throw new MobileExistedException(String.format("Mobile %s is existed!!!", customerDTO.getMobile()));
+                throw new MobileExistedException(String.format("Mobile %s is existed!!!", updateCustomerDTO.getMobile()));
             } catch (MobileExistedException e) {
                 throw new RuntimeException(e);
             }
 
         }
         Customer savedCustomer = customerRepo.findById(customerId).get();
-        savedCustomer.setAddress(customerDTO.getAddress());
-        savedCustomer.setMobile(customerDTO.getMobile());
+        savedCustomer.setAddress(updateCustomerDTO.getAddress());
+        savedCustomer.setMobile(updateCustomerDTO.getMobile());
         Customer updatedCustomer = customerRepo.save(savedCustomer);
         log.info("Customer update after: {}", updatedCustomer);
-        return CustomerDTO.Mapper.mapFromCustomerEntity(updatedCustomer);
+        return updatedCustomer;
     }
 
     @Override
