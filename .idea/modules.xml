@@ -3,6 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/FIS_Training.iml" filepath="$PROJECT_DIR$/.idea/FIS_Training.iml" />
+      <module fileurl="file://$PROJECT_DIR$/FinalTest_OrderManagementSystem/FinalTest_OrderManagementSystem.iml" filepath="$PROJECT_DIR$/FinalTest_OrderManagementSystem/FinalTest_OrderManagementSystem.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Sprint_4/Sprint_4.iml" filepath="$PROJECT_DIR$/Sprint_4/Sprint_4.iml" />
     </modules>
   </component>
 </project>
